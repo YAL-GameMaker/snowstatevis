@@ -1,0 +1,12 @@
+{
+    "linterPrefs": {
+        "blockScopedCase": true,
+        "blockScopedVar": true,
+        "checkHasReturn": true,
+        "implicitBoolIntCasts": true,
+        "requireFields": true,
+        "specTypeInst": true,
+        "specTypeStatic": true,
+        "specTypeVar": true
+    }
+}

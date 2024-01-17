@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html><head>
+	<style>
+		body {
+			font: 15px sans-serif;
+			background-color: #889EC5;
+		}
+		#views {
+			display: flex;
+			position: absolute;
+			inset: 0.5em;
+		}
+		#list {
+			min-width: 10em;
+		}
+		#list, .view {
+			padding: 0.3em;
+			background-color: white;
+			box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.5);
+		}
+		#list label {
+			display: block;
+		}
+		.view {
+			margin-left: 0.5em;
+		}
+		.view h2 {
+			margin: 0.5em;
+		}
+		.view label {
+			display: block;
+		}
+	</style>
+</head><body>
+	<div id="views">
+		<div id="list"></div>
+	</div>
+<script>(function() {
+	const socket = new WebSocket("ws://localhost:2002");
+	const viewsElement = document.getElementById("views");
+	const listElement = document.getElementById("list");
+	const fsmToggles = [];
+	const fsmViews = [];
+	function arrFind(arr, game, name) {
+		return arr.filter(q => q.game == game && q.name == name)[0];
+	}
+	function arrRemove(arr, value) {
+		var i = arr.indexOf(value);
+		if (i >= 0) arr.splice(i, 1);
+	}
+	// Connection opened
+	console.log("Connecting...");
+	var ready = false;
+	function send(obj) {
+		if (ready) socket.send(JSON.stringify(obj));
+	}
+	socket.addEventListener("open", (event) => {
+		ready = true;
+		console.log("Connected!");
+		send({ type: "hello" });
+	});
+	socket.addEventListener("close", (event) => {
+		let label = document.createElement("label");
+		label.appendChild(document.createTextNode(ready ? "Disconnected!" : "Failed to connect!"));
+		listElement.appendChild(label);
+		ready = false;
+	});
+	socket.addEventListener("error", (event) => {
+		console.error(event);
+		ready = false;
+		let label = document.createElement("label");
+		label.appendChild(document.createTextNode("Error!"));
+		listElement.appendChild(label);
+	});
+	
+	let sendFsmChangeOnCheckbox = true;
+	function sendFsmChange(game, name, newState) {
+		send({
+			type: "fsm.change",
+			game, name,
+			current: newState,
+		})
+	}
+	
+	function handleMessage(msg) {
+		switch (msg.type) {
+			case "fsm_list.add":
+				for (let pair of msg.array) {
+					pair.label = document.createElement("label");
+					let cb = document.createElement("input");
+					cb.type = "checkbox";
+					cb.onchange = () => {
+						let want = cb.checked;
+						send({
+							type: want ? "fsm.watch" : "fsm.unwatch",
+							game: pair.game,
+							name: pair.name
+						});
+						if (!want) {
+							let view = arrFind(fsmViews, pair.name, pair.game);
+							if (view) {
+								view.element.remove();
+								fsmViews.splice(fsmViews.indexOf(view), 1);
+							}
+						}
+					};
+					pair.label.appendChild(cb);
+					pair.label.appendChild(document.createTextNode(pair.game + " · " + pair.name));
+					fsmToggles.push(pair);
+					listElement.appendChild(pair.label);
+				}
+			break;
+			case "fsm_view.add":
+				let viewEl = document.createElement("div");
+				viewEl.classList.add("view");
+				
+				let header = document.createElement("h2");
+				header.appendChild(document.createTextNode(msg.name));
+				viewEl.appendChild(header);
+				
+				let rgName = msg.game + "/" + msg.name;
+				let radios = {};
+				for (let state of msg.states) {
+					let label = document.createElement("label");
+					let rb = document.createElement("input");
+					rb.type = "radio";
+					rb.name = rgName;
+					rb.checked = state == msg.current;
+					rb.addEventListener("change", () => {
+						if (sendFsmChangeOnCheckbox) sendFsmChange(msg.game, msg.name, state);
+					});
+					label.appendChild(rb);
+					label.appendChild(document.createTextNode(state));
+					viewEl.appendChild(label);
+					radios[state] = rb;
+				}
+				
+				viewsElement.appendChild(viewEl);
+				fsmViews.push({
+					element: viewEl,
+					game: msg.game,
+					name: msg.name,
+					radios: radios,
+				});
+			break;
+			case "fsm_view.update":
+				let view = fsmViews.filter(q => q.name == msg.name && q.game == msg.game)[0];
+				if (view) {
+					let radio = view.radios[msg.current];
+					if (radio) {
+						let _sendFsmChangeOnCheckbox = sendFsmChangeOnCheckbox;
+						sendFsmChangeOnCheckbox = false;
+						radio.checked = true;
+						sendFsmChangeOnCheckbox = _sendFsmChangeOnCheckbox;
+					}
+				}
+			break;
+		}
+	}
+
+	// Listen for messages
+	const nul = String.fromCharCode(0);
+	socket.addEventListener("message", async (event) => {
+		let text = await event.data.text();
+		if (nul.endsWith(nul)) text = text.substring(0, text.length - 1);
+		console.log("Server says:", text);
+		try {
+			handleMessage(JSON.parse(text));
+		} catch (e) {
+			console.error(e);
+		}
+	});
+})()</script>
+</body></html>
