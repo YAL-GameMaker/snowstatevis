@@ -14,7 +14,7 @@ function SnowStateVisServerGame(_server, _socket) : SnowStateVisServerItem(_serv
 				break;
 			case "fsm.register":
 				if (__fsm_lookup[$ _msg.name] != undefined) break;
-				var _fsm = new SnowStateVisServerFSM(self, _msg.name, _msg.states, _msg.current);
+				var _fsm = new SnowStateVisServerFSM(self, _msg.name, _msg.states, _msg.current, _msg.transit);
 				__fsm_lookup[$ _msg.name] = _fsm;
 				array_push(__fsm_array, _fsm);
 				break;

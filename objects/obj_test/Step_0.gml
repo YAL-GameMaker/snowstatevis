@@ -1,1 +1,1 @@
-client.update();
+if (client != undefined) client.update();

@@ -13,7 +13,7 @@ function SnowStateVisClient(_name) constructor {
 	
 	/// @param {SnowState} fsm
 	/// @param {string} label
-	static add = function(_fsm, _name) {
+	static add = function(_fsm, _name, _trans) {
 		if (variable_struct_exists(__fsm_lookup, _name)) return false;
 		if (array_contains(__fsm_raw_array, _fsm)) return false;
 		array_push(__fsm_raw_array, _fsm);
@@ -25,6 +25,7 @@ function SnowStateVisClient(_name) constructor {
 			name: _name,
 			states: variable_struct_get_names(_fsm.__states),
 			current: _wrap.__current,
+			transit: _trans,
 		});
 		return true;
 	}

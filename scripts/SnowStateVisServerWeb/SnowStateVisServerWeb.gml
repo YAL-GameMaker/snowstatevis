@@ -38,6 +38,7 @@ function SnowStateVisServerWeb(_server, _socket) : SnowStateVisServerItem(_serve
 					name: _msg.name,
 					states: _inst.__states,
 					current: _inst.__current,
+					transit: _inst.__transit,
 				});
 				break;
 			case "fsm.unwatch":

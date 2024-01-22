@@ -40,7 +40,10 @@
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Timelines","folderPath":"folders/Timelines.yy",},
   ],
   "IncludedFiles": [
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"dagre.js","CopyToMask":-1,"filePath":"datafiles/SnowStateVis",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"index.html","CopyToMask":-1,"filePath":"datafiles/SnowStateVis",},
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"script.js","CopyToMask":-1,"filePath":"datafiles/SnowStateVis",},
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"style.css","CopyToMask":-1,"filePath":"datafiles/SnowStateVis",},
   ],
   "isEcma": false,
   "LibraryEmitters": [],

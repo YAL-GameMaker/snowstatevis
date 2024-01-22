@@ -32,4 +32,13 @@ fsm.add("down", {
 		if (mouse_check_button_pressed(mb_left) && position_meeting(mouse_x, mouse_y, id)) fsm.change("idle");
 	}
 });
-obj_test.client.add(fsm, "upDown " + string(int64(id)));
+fsm.add("warp", {
+	step: function() /*=>*/ {}
+})
+if (obj_test.want_client) {
+	obj_test.client.add(fsm, "upDown " + string(int64(id)), {
+		idle: ["up", "down", "warp"],
+		up: "idle",
+		down: "idle",
+	});
+}

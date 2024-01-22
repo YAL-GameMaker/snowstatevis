@@ -1,9 +1,16 @@
-show_debug_message($"connect={network_type_connect}")
-show_debug_message($"disconnect={network_type_disconnect}")
-show_debug_message($"data={network_type_data}")
-show_debug_message($"data={network_type_non_blocking_connect}")
-server = new SnowStateVisServer(2000, 2001, 2002);
-server.start();
+is_browser = os_browser != browser_not_a_browser;
+want_server = !is_browser;
+want_client = 1 || is_browser;
 
-client = new SnowStateVisClient("game");
-client.connect("127.0.0.1", 2001);
+if (want_server) {
+	server = new SnowStateVisServer(2000, 2001, 2002);
+	server.start();
+} else server = /*#cast*/ undefined;
+
+if (want_client) {
+	client = new SnowStateVisClient("game");
+	client.connect("127.0.0.1", 2001);
+} else client = /*#cast*/ undefined;
+call_later(1, time_source_units_seconds, function() {
+	draw_enable_drawevent(0);
+})
