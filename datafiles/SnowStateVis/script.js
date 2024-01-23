@@ -55,6 +55,7 @@
 		return a * (1 - f) + b * f;
 	}
 	
+	const edgeSep = "\x1B";
 	function handleMessage(msg) {
 		switch (msg.type) {
 			case "fsm_list.add":
@@ -70,7 +71,7 @@
 							name: pair.name
 						});
 						if (!want) {
-							let view = arrFind(fsmViews, pair.name, pair.game);
+							let view = arrFind(fsmViews, pair.game, pair.name);
 							if (view) {
 								view.element.remove();
 								fsmViews.splice(fsmViews.indexOf(view), 1);
@@ -93,9 +94,6 @@
 				
 				viewsElement.appendChild(viewCtr);
 				
-				let rgName = msg.game + "/" + msg.name;
-				let radios = {};
-				
 				var g = new dagre.graphlib.Graph();
 				g.setGraph({});
 				g.setDefaultEdgeLabel(function() { return {}; });
@@ -117,7 +115,7 @@
     <marker
        style="overflow:visible"
        id="TriangleStart"
-       refX="0"
+       refX="2"
        refY="0"
        orient="auto-start-reverse"
        inkscape:stockid="TriangleStart"
@@ -143,31 +141,28 @@
 				
 				let svg = graphCtr.querySelector("svg#arrows");
 				let svgArrows = svg.querySelector("g#arrows");
+				let svgNodes = Object.create(null);
+				let svgEdges = Object.create(null);
 				
 				for (let state of msg.states) {
-					let label = document.createElement("span");
-					label.classList.add("state");
-					label.innerText = state;
-					graphCtr.appendChild(label);
+					let stateBox = document.createElement("span");
+					stateBox.classList.add("state");
+					if (state == msg.current) stateBox.classList.add("current");
+					stateBox.innerText = state;
+					stateBox.onclick = function() {
+						sendFsmChange(msg.game, msg.name, state);
+					}
+					graphCtr.insertBefore(stateBox, svg);
+					svgNodes[state] = stateBox;
+					
 					g.setNode(state, {
 						label: state,
-						width: label.offsetWidth,
-						height: label.offsetHeight,
-						_node: label,
+						width: stateBox.offsetWidth,
+						height: stateBox.offsetHeight,
+						_node: stateBox,
 					});
-					/*let label = document.createElement("label");
-					let rb = document.createElement("input");
-					rb.type = "radio";
-					rb.name = rgName;
-					rb.checked = state == msg.current;
-					rb.addEventListener("change", () => {
-						if (sendFsmChangeOnCheckbox) sendFsmChange(msg.game, msg.name, state);
-					});
-					label.appendChild(rb);
-					label.appendChild(document.createTextNode(state));
-					viewEl.appendChild(label);
-					radios[state] = rb;*/
 				}
+				
 				for (let from of Object.keys(msg.transit)) {
 					let tol = msg.transit[from];
 					if (Array.isArray(tol)) {
@@ -182,26 +177,24 @@
 				}
 				dagre.layout(g);
 				
-				let graphWidth = 0, graphHeight = 0, graphX = 999, graphY = 999;
+				let graphWidth = 0, graphHeight = 0, graphX = Infinity, graphY = Infinity;
 				for (let state of g.nodes()) {
 					let inf = g.node(state);
-					console.log(state, inf);
+					//console.log(state, inf);
 					let label = inf._node;
-					label.style.left = (inf.x|0) + "px";
-					label.style.top = (inf.y|0) + "px";
+					label.style.left = (inf.x | 0) + "px";
+					label.style.top = (inf.y | 0) + "px";
 					graphWidth = Math.max(graphWidth, inf.x + inf.width);
 					graphHeight = Math.max(graphHeight, inf.y + inf.height);
 					graphX = Math.min(graphX, inf.x);
 					graphY = Math.min(graphY, inf.y);
 				}
-				console.log(graphX, graphY);
+				
 				for (let edge_id of g.edges()) {
 					let edge = g.edge(edge_id);
-					//let svgPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-					//svgPath.setAttribute("style", "fill:none;stroke:#000000;stroke-width:0.79375;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#TriangleStart);stroke-dasharray:none");
-					//svgArrows.appendChild(svgPath);
-					let pathData = "m";
-					let lastPoint = {x:-graphX, y:-graphY};
+					
+					let edgeArrowData = "m";
+					let lastPoint = { x: -graphX, y: -graphY };
 					if (edge.points.length == 3) {
 						let p0 = edge.points[0];
 						let p0x = p0.x - lastPoint.x;
@@ -215,40 +208,26 @@
 						let p2x = p2.x - p0.x;
 						let p2y = p2.y - p0.y;
 						
-						/*svgArrows.appendChild(createSvg("circle", {
-							cx: graphX + p1.x,
-							cy: graphY + p1.y,
-							r: 3,
-						}));*/
-						
-						const lf = 0;
-						let p1a = lerp(p1x, p0x, lf) + "," + lerp(p1y, p0y, lf);
-						let p1b = lerp(p1x, p2x, lf) + "," + lerp(p1y, p2y, lf);
-						pathData += ` ${p0x},${p0y} q ${p1a} ${p2x},${p2y}`;
+						edgeArrowData += ` ${p0x},${p0y} q ${p1x},${p1y} ${p2x},${p2y}`;
 					} else for (let point of edge.points) {
-						pathData += " " + (point.x - lastPoint.x) + "," + (point.y - lastPoint.y);
+						edgeArrowData += " " + (point.x - lastPoint.x) + "," + (point.y - lastPoint.y);
 						lastPoint = point;
 					}
-					//svgPath.setAttribute("d", pathData);
-					svgArrows.appendChild(createSvg("path", {
-						d: pathData,
+					
+					let edgeArrow = createSvg("path", {
+						d: edgeArrowData,
 						"data-from": edge_id.v,
 						"data-to": edge_id.w,
 						style: [
 							"fill: none",
-							"stroke: #000000",
 							"stroke-width: 2",
+							"stroke-linecap: round",
+							"stroke-linejoin: round",
 							"marker-end:url(#TriangleStart)",
 						].join(";"),
-					}));
-					
-					let svgCir = createSvg("circle", {
-						cx: edge.points[0].x,
-						cy: edge.points[0].y,
-						r: 5,
-					})
-					//svgArrows.appendChild(svgCir)
-					console.log(edge_id, edge);
+					});
+					svgArrows.appendChild(edgeArrow);
+					svgEdges[edge_id.v + edgeSep + edge_id.w] = edgeArrow;
 				}
 				graphWidth = Math.ceil(graphWidth);
 				graphHeight = Math.ceil(graphHeight);
@@ -261,23 +240,37 @@
 				
 				
 				fsmViews.push({
-					element: viewCtr,
 					game: msg.game,
 					name: msg.name,
-					radios: radios,
+					element: viewCtr,
+					nodes: svgNodes,
+					edges: svgEdges,
+					current: msg.current,
+					currentNode: svgNodes[msg.current],
 				});
 			break;
 			case "fsm_view.update":
-				let view = fsmViews.filter(q => q.name == msg.name && q.game == msg.game)[0];
-				if (view) {
-					let radio = view.radios[msg.current];
-					if (radio) {
-						let _sendFsmChangeOnCheckbox = sendFsmChangeOnCheckbox;
-						sendFsmChangeOnCheckbox = false;
-						radio.checked = true;
-						sendFsmChangeOnCheckbox = _sendFsmChangeOnCheckbox;
+				let view = arrFind(fsmViews, msg.game, msg.name);
+				if (!view) break;
+				if (view.currentNode) {
+					view.currentNode.classList.remove("current");
+					let edge = view.edges[view.current + edgeSep + msg.current];
+					if (edge) {
+						console.log(edge);
+						edge.classList.add("instant");
+						edge.classList.add("active");
+						setTimeout(function() {
+							edge.classList.remove("instant");
+							edge.classList.remove("active");
+						}, 300);
 					}
 				}
+				let node = view.nodes[msg.current];
+				if (node) {
+					node.classList.add("current");
+				}
+				view.current = msg.current;
+				view.currentNode = node;
 			break;
 		}
 	}

@@ -1,0 +1,56 @@
+body {
+	font: 15px sans-serif;
+	background-color: #889EC5;
+}
+#views {
+	display: flex;
+	position: absolute;
+	inset: 0.5em;
+}
+#list {
+	min-width: 10em;
+}
+#list, .view {
+	padding: 0.3em;
+	background-color: white;
+	box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.5);
+}
+#list label {
+	display: block;
+}
+.view {
+	margin-left: 0.5em;
+	overflow: auto;
+	resize: horizontal;
+}
+.view .graph {
+	position: relative;
+	svg {
+		position: absolute;
+		pointer-events: none;
+	}
+	svg path {
+		transition: all 0.3s ease-in-out;
+	}
+	svg path.instant {
+		transition: none;
+	}
+	svg path.active {
+		stroke: red;
+	}
+}
+.view h2 {
+	margin: 0.5em;
+}
+.view label {
+	display: block;
+}
+.view .state {
+	position: absolute;
+	padding: 0.3em 0.5em;
+	border-radius: 0.6em;
+	box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+	&.current {
+		outline: 1px solid red;
+	}
+}

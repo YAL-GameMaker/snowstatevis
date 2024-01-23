@@ -44,6 +44,7 @@
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"index.html","CopyToMask":-1,"filePath":"datafiles/SnowStateVis",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"script.js","CopyToMask":-1,"filePath":"datafiles/SnowStateVis",},
     {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"style.css","CopyToMask":-1,"filePath":"datafiles/SnowStateVis",},
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"style.less","CopyToMask":-1,"filePath":"datafiles/SnowStateVis",},
   ],
   "isEcma": false,
   "LibraryEmitters": [],

@@ -1,40 +1,57 @@
 body {
-	font: 15px sans-serif;
-	background-color: #889EC5;
+  font: 15px sans-serif;
+  background-color: #889EC5;
 }
 #views {
-	display: flex;
-	position: absolute;
-	inset: 0.5em;
+  display: flex;
+  position: absolute;
+  inset: 0.5em;
 }
 #list {
-	min-width: 10em;
+  min-width: 10em;
 }
-#list, .view {
-	padding: 0.3em;
-	background-color: white;
-	box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.5);
+#list,
+.view {
+  padding: 0.3em;
+  background-color: white;
+  box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.5);
 }
 #list label {
-	display: block;
+  display: block;
 }
 .view {
-	margin-left: 0.5em;
-	overflow: auto;
-	resize: horizontal;
+  margin-left: 0.5em;
+  overflow: auto;
+  resize: horizontal;
 }
 .view .graph {
-	position: relative;
+  position: relative;
+}
+.view .graph svg {
+  position: absolute;
+  pointer-events: none;
+}
+.view .graph svg path {
+  transition: all 0.3s ease-in-out;
+}
+.view .graph svg path.instant {
+  transition: none;
+}
+.view .graph svg path.active {
+  stroke: red;
 }
 .view h2 {
-	margin: 0.5em;
+  margin: 0.5em;
 }
 .view label {
-	display: block;
+  display: block;
 }
 .view .state {
-	position: absolute;
-	padding: 0.3em 0.5em;
-	border-radius: 0.6em;
-	box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+  position: absolute;
+  padding: 0.3em 0.5em;
+  border-radius: 0.6em;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
+.view .state.current {
+  outline: 1px solid red;
 }
