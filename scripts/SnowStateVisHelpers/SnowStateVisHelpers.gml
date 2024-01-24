@@ -1,8 +1,12 @@
-function __SnowStateVis_send(_socket, _msg) {
+function __SnowStateVis_send(_socket, _msg, _raw) {
 	static _buf = buffer_create(1024, buffer_grow, 1);
 	buffer_seek(_buf, buffer_seek_start, 0);
 	buffer_write(_buf, buffer_string, json_stringify(_msg));
-	network_send_raw(__socket, _buf, buffer_tell(_buf));
+	if (_raw) {
+		network_send_raw(__socket, _buf, buffer_tell(_buf));
+	} else {
+		network_send_packet(__socket, _buf, buffer_tell(_buf));
+	}
 }
 /// @param {buffer} buf
 /// @returns {any}

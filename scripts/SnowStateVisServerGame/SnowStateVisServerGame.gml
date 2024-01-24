@@ -1,6 +1,6 @@
 /// @param {SnowStateVisServer} server
 /// @param {network_socket} socket
-function SnowStateVisServerGame(_server, _socket) : SnowStateVisServerItem(_server, _socket) constructor {
+function SnowStateVisServerGame(_server, _socket, _is_raw) : SnowStateVisServerItem(_server, _socket, _is_raw) constructor {
 	__fsm_lookup = {}; /// @is {CustomKeyStruct<string, SnowStateVisServerFSM>}
 	__fsm_array = []; /// @is {SnowStateVisServerFSM[]}
 	__name = "";

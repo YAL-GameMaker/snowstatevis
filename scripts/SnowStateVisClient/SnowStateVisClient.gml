@@ -1,14 +1,26 @@
 function SnowStateVisClient(_name) constructor {
 	__socket = -1 /*#as network_socket*/;
+	__is_raw = false;
 	__ready = false;
 	__queue = [];
 	__fsm_raw_array = [] /*#as SnowState[]*/;
 	__fsm_array = [] /*#as SnowStateVisClientFSM[]*/;
 	__fsm_lookup = {}; /// @is {CustomKeyStruct<string, SnowStateVisClientFSM>}
 	
-	static connect = function(_url, _port) {
-		__socket = network_create_socket(network_socket_ws);
-		network_connect_raw_async(__socket, _url, _port);
+	static connect = function(_url, _ws_port, _tcp_port, _use_ws = undefined) {
+		_use_ws ??= os_browser != browser_not_a_browser;
+		__is_raw = _use_ws;
+		var _result;
+		if (_use_ws) {
+			__socket = network_create_socket(network_socket_ws);
+			_result = network_connect_raw_async(__socket, _url, _ws_port);
+		} else {
+			__socket = network_create_socket(network_socket_tcp);
+			//network_set_config(network_config_use_non_blocking_socket, true);
+			_result = network_connect_async(__socket, _url, _tcp_port);
+		}
+		trace("Connect", {result: _result});
+		return _result;
 	}
 	
 	/// @param {SnowState} fsm
@@ -73,7 +85,7 @@ function SnowStateVisClient(_name) constructor {
 	static __send = function(_msg) {
 		show_debug_message("send from game: " + json_stringify(_msg));
 		if (__ready) {
-			__SnowStateVis_send(__socket, _msg);
+			__SnowStateVis_send(__socket, _msg, __is_raw);
 		} else {
 			array_push(__queue, _msg);
 		}
@@ -88,7 +100,7 @@ function SnowStateVisClient(_name) constructor {
 				if (__ready) {
 					var n = array_length(__queue);
 					for (var i = 0; i < n; i++) {
-						__SnowStateVis_send(__socket, __queue[i]);
+						__SnowStateVis_send(__socket, __queue[i], __is_raw);
 					}
 					array_resize(__queue, 0);
 				}

@@ -1,6 +1,6 @@
 /// @param {SnowStateVisServer} server
 /// @param {network_socket} socket
-function SnowStateVisServerWeb(_server, _socket) : SnowStateVisServerItem(_server, _socket) constructor {
+function SnowStateVisServerWeb(_server, _socket) : SnowStateVisServerItem(_server, _socket, true) constructor {
 	__watch = []; /// @is {SnowStateVisServerFSM[]}
 	static __handle_message = function(_msg) {
 		switch (_msg.type) {

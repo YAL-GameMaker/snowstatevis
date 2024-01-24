@@ -1,12 +1,18 @@
-function SnowStateVisServer(_http_port, _game_ws_port, _web_ws_port) constructor {
+function SnowStateVisServer(_http_port, _web_ws_port, _game_ws_port, _game_tcp_port) constructor {
 	// HTTP server for frontend:
 	__http_server = new HttpServer(_http_port);
 	__http_server.add_file("", "SnowStateVis/index.html");
+	__http_server.add_path("wsPort.json", function(_ctx/*:HttpServerRequestContext*/) {
+		var _re/*:HttpResponse*/ = _ctx.response;
+		_re.send_string(string(__web_port));
+	})
 	__http_server.add_file_server("*", "SnowStateVis");
 	
 	// game instances:
-	__game_port = _game_ws_port;
-	__game_server = -1 /*#as network_server*/;
+	__game_ws_port = _game_ws_port;
+	__game_tcp_port = _game_tcp_port;
+	__game_ws_server = -1 /*#as network_server*/;
+	__game_tcp_server = -1 /*#as network_server*/;
 	__game_from_socket = {}; /// @is {CustomKeyStruct<network_socket, SnowStateVisServerGame>}
 	__game_from_name = {}; /// @is {CustomKeyStruct<string, SnowStateVisServerGame>}
 	__game_array = []; /// @is {SnowStateVisServerGame[]}
@@ -21,13 +27,17 @@ function SnowStateVisServer(_http_port, _game_ws_port, _web_ws_port) constructor
 	//
 	static start = function() {
 		__http_server.start();
-		__game_server = network_create_server_raw(network_socket_ws, __game_port, 16);
+		__game_ws_server = network_create_server_raw(network_socket_ws, __game_ws_port, 16);
+		__game_tcp_server = network_create_server(network_socket_tcp, __game_tcp_port, 16);
 		__web_server = network_create_server_raw(network_socket_ws, __web_port, 16);
+		//show_debug_message(["servers", __game_ws_server, __game_tcp_server, __web_server]);
 	}
 	static stop = function() {
 		__http_server.stop();
-		network_destroy(__game_server);
-		__game_server = -1;
+		network_destroy(__game_ws_server);
+		__game_ws_server = -1;
+		network_destroy(__game_tcp_server);
+		__game_tcp_server = -1;
 		network_destroy(__web_server);
 		__web_server = -1;
 	}
@@ -39,13 +49,15 @@ function SnowStateVisServer(_http_port, _game_ws_port, _web_ws_port) constructor
 		}
 	}
 	static __handle_connect = function(_map/*:async_load_network*/) {
-		if (_map[?"id"] == __game_server) {
+		var _is_ws = _map[?"id"] == __game_ws_server;
+		if (_is_ws || _map[?"id"] == __game_tcp_server) {
 			var _skt = _map[?"socket"];
-			var _game = new SnowStateVisServerGame(self, _skt);
+			var _game = new SnowStateVisServerGame(self, _skt, _is_ws);
 			__game_from_socket[$ _skt] = _game;
 			array_push(__game_array, _game);
 			show_debug_message("Game connected!");
-		} else if (_map[?"id"] == __web_server) {
+		}
+		else if (_map[?"id"] == __web_server) {
 			var _skt = _map[?"socket"];
 			var _web = new SnowStateVisServerWeb(self, _skt);
 			__web_from_socket[$ _skt] = _web;
