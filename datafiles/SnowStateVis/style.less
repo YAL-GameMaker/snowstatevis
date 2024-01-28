@@ -30,13 +30,12 @@ body {
 		pointer-events: none;
 	}
 	svg path {
-		transition: all 0.3s ease-in-out;
-	}
-	svg path.instant {
-		transition: none;
-	}
-	svg path.active {
-		stroke: red;
+		&.active {
+			stroke: red;
+		}
+		&.fade {
+			stroke: rgba(calc(var(--fade) * 255), 0, 0);
+		}
 	}
 }
 .view h2 {
@@ -50,7 +49,11 @@ body {
 	padding: 0.3em 0.5em;
 	border-radius: 0.6em;
 	box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+	outline: 1px solid transparent;
 	&.current {
 		outline: 1px solid red;
+	}
+	&.fade {
+		outline: 1px solid rgba(255, 0, 0, var(--fade));
 	}
 }

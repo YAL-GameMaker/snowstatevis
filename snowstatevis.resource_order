@@ -46,6 +46,7 @@
     {"name":"scrHttpServerExceptions","order":19,"path":"scripts/scrHttpServerExceptions/scrHttpServerExceptions.yy",},
     {"name":"HttpServerSpriteServer","order":15,"path":"scripts/HttpServerSpriteServer/HttpServerSpriteServer.yy",},
     {"name":"Sentry","order":2,"path":"scripts/Sentry/Sentry.yy",},
+    {"name":"SnowStateVisPatch","order":3,"path":"scripts/SnowStateVisPatch/SnowStateVisPatch.yy",},
     {"name":"buffer_crc32_iso3309","order":1,"path":"scripts/buffer_crc32_iso3309/buffer_crc32_iso3309.yy",},
     {"name":"SnowStateVisServer","order":4,"path":"scripts/SnowStateVisServer/SnowStateVisServer.yy",},
     {"name":"SnowStateVisServerItem","order":1,"path":"scripts/SnowStateVisServerItem/SnowStateVisServerItem.yy",},

@@ -25,13 +25,48 @@ function SnowStateVisClient(_name) constructor {
 	
 	/// @param {SnowState} fsm
 	/// @param {string} label
-	static add = function(_fsm, _name, _trans) {
+	static add = function(_fsm, _name, _trans = {}) {
 		if (variable_struct_exists(__fsm_lookup, _name)) return false;
 		if (array_contains(__fsm_raw_array, _fsm)) return false;
 		array_push(__fsm_raw_array, _fsm);
 		var _wrap = new SnowStateVisClientFSM(self, _fsm, _name);
 		array_push(__fsm_array, _wrap);
 		__fsm_lookup[$ _name] = _wrap;
+		
+		// copy user-defined transitions to transitions struct:
+		// __transitions is from -> label > array of transitions
+		var _ft = _fsm.__transitions;
+		var _ft_keys = struct_get_names(_ft);
+		var _ft_count = array_length(_ft_keys);
+		for (var _ft_ind = 0; _ft_ind < _ft_count; _ft_ind++) {
+			var _ft_from = _ft_keys[_ft_ind];
+			// labels is { "idle->up": [{ to: "up", ... }] }
+			var _ft_labels = _ft[$ _ft_from];
+			var _ft_labels_keys = struct_get_names(_ft_labels);
+			var _ft_labels_count = array_length(_ft_labels_keys);
+			for (var _ft_labels_ind = 0; _ft_labels_ind < _ft_labels_count; _ft_labels_ind++) {
+				var _ft_labels_key = _ft_labels_keys[_ft_labels_ind];
+				var _ft_transitions = _ft_labels[$ _ft_labels_key];
+				// transitions is [{ to: "up", ... }]
+				var _ft_trans_count = array_length(_ft_transitions);
+				for (var _ft_trans_ind = 0; _ft_trans_ind < _ft_trans_count; _ft_trans_ind++) {
+					var _ft_trans = _ft_transitions[_ft_trans_ind];
+					var _ft_to = _ft_trans.to;
+					
+					var _trans_cur = _trans[$ _ft_from];
+					if (_trans_cur == undefined) {
+						_trans[$ _ft_from] = _ft_to;
+					} else if (is_array(_trans_cur)) {
+						if (array_get_index(_trans_cur, _ft_to) < 0) {
+							array_push(_trans_cur, _ft_to);
+						}
+					} else if (_trans_cur != _ft_to) {
+						_trans[$ _ft_from] = [_trans_cur, _ft_to];
+					}
+				}
+			}
+		}
+		//
 		__send({
 			type: "fsm.register",
 			name: _name,
@@ -39,22 +74,31 @@ function SnowStateVisClient(_name) constructor {
 			current: _wrap.__current,
 			transit: _trans,
 		});
+		_fsm.on("state changed", method(_wrap, function(_to, _from, _trigger) {
+			__current = _to;
+			__client.__send({
+				type: "fsm.update",
+				name: __name,
+				current: _to,
+			})
+			trace("change: " + _from + " -> " + _to);
+		}))
 		return true;
 	}
 	
 	/// @param {SnowState|string} fsm_or_name
 	static remove = function(_fsm_or_name) {
-		var _fsm/*:SnowStateVisClientFSM*/, _name, _ind;
+		var _wrap/*:SnowStateVisClientFSM*/, _name, _ind;
 		if (is_string(_fsm_or_name)) {
 			_name = _fsm_or_name;
-			_fsm = __fsm_lookup[$ _name];
-			if (_fsm == undefined) return false;
-			_ind = array_get_index(__fsm_array, _fsm);
+			_wrap = __fsm_lookup[$ _name];
+			if (_wrap == undefined) return false;
+			_ind = array_get_index(__fsm_array, _wrap);
 		} else {
 			_ind = array_get_index(__fsm_raw_array, _fsm_or_name /*#as SnowState*/);
 			if (_ind < 0) return false;
-			_fsm = __fsm_array[_ind];
-			_name = _fsm.__name;
+			_wrap = __fsm_array[_ind];
+			_name = _wrap.__name;
 		}
 		array_delete(__fsm_raw_array, _ind, 1);
 		array_delete(__fsm_array, _ind, 1);
@@ -67,8 +111,9 @@ function SnowStateVisClient(_name) constructor {
 	}
 	
 	static update = function() {
-		var n = array_length(__fsm_array);
-		for (var i = 0; i < n; i++) {
+		exit;
+		var _ft_count = array_length(__fsm_array);
+		for (var i = 0; i < _ft_count; i++) {
 			var _wrap = __fsm_array[i];
 			var _current = _wrap.__raw.get_current_state();
 			if (_current != _wrap.__current) {
@@ -98,8 +143,8 @@ function SnowStateVisClient(_name) constructor {
 				__ready = _map[?"succeeded"];
 				show_debug_message("ready: " + string(__ready) + " skt: " + string(__socket));
 				if (__ready) {
-					var n = array_length(__queue);
-					for (var i = 0; i < n; i++) {
+					var _ft_count = array_length(__queue);
+					for (var i = 0; i < _ft_count; i++) {
 						__SnowStateVis_send(__socket, __queue[i], __is_raw);
 					}
 					array_resize(__queue, 0);

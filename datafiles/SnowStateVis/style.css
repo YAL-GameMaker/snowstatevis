@@ -31,14 +31,11 @@ body {
   position: absolute;
   pointer-events: none;
 }
-.view .graph svg path {
-  transition: all 0.3s ease-in-out;
-}
-.view .graph svg path.instant {
-  transition: none;
-}
 .view .graph svg path.active {
   stroke: red;
+}
+.view .graph svg path.fade {
+  stroke: rgba(calc(var(--fade) * 255), 0, 0);
 }
 .view h2 {
   margin: 0.5em;
@@ -51,7 +48,11 @@ body {
   padding: 0.3em 0.5em;
   border-radius: 0.6em;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+  outline: 1px solid transparent;
 }
 .view .state.current {
   outline: 1px solid red;
+}
+.view .state.fade {
+  outline: 1px solid rgba(255, 0, 0, var(--fade));
 }
