@@ -22,7 +22,7 @@ fsm.add("up", {
 			next = rate;
 			if (bbox_top >= 32) y -= 32;
 		}
-		if (mouse_check_button_pressed(mb_left) && position_meeting(mouse_x, mouse_y, id)) fsm.change("idle");
+		if (clicked()) fsm.change("idle");
 	}
 });
 fsm.add("down", {
@@ -32,7 +32,7 @@ fsm.add("down", {
 			next = rate;
 			if (bbox_bottom <= room_height - 32) y += 32;
 		}
-		if (mouse_check_button_pressed(mb_left) && position_meeting(mouse_x, mouse_y, id)) fsm.change("idle");
+		if (clicked()) fsm.change("idle");
 	}
 });
 fsm.add("warp", {
@@ -54,14 +54,13 @@ fsm.add("stuck4", {
 fsm.add_transition("up", "idle", "up");
 fsm.add_transition("down", "idle", "down");
 //
-if (obj_test.want_client) {
-	obj_test.client.add(fsm, "upDown " + string(int64(id)), {
-		//idle: ["up", "down", "warp"],
-		up: "idle",
-		down: "idle",
-		stuck1: "stuck2",
-		stuck2: "stuck3",
-		stuck3: "stuck4",
-		stuck4: "stuck1",
-	});
-}
+ssv_name = object_get_name(object_index) + " " + string(int64(id));
+ssv_client.add(fsm, ssv_name, {
+	//idle: ["up", "down", "warp"],
+	up: "idle",
+	down: "idle",
+	stuck1: "stuck2",
+	stuck2: "stuck3",
+	stuck3: "stuck4",
+	stuck4: "stuck1",
+});

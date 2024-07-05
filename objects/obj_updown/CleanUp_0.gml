@@ -1,0 +1,1 @@
+ssv_client.remove(ssv_name);

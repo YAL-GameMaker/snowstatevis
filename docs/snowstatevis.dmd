@@ -1,0 +1,135 @@
+```set template default.html```
+```set autoapi ext```
+```gmlapi fnames2```
+```set title Raw Input documentation```
+```set mainclass boxtt```
+```set url https://yal.cc/r/19/raw_input/```
+```set desc
+Raw Input is an extension that can tell apart input from multiple mice and keyboards in GameMaker games!
+```
+```setmd intro
+This is a "cheat sheet" for the SnowStateVis system by YellowAfterlife!
+
+Check out the [GitHub page](https://github.com/YAL-GameMaker/snowstatevis) for more information.
+```
+```gmlapi
+ssv_web_http_port
+ssv_web_ws_port
+ssv_client_tcp_port
+ssv_client_ws_port
+```
+#[Setting up](setup) {
+	##{
+	-	Import the YYMPS file (from Releases) to your project.\
+		If you don't usually debug your project on desktop,
+		you can omit the included files (and see the subsequent section)
+	-	Add `obj_snowstatevis` to your first room\
+		(and make sure that you don't destroy/deactivate it on accident)
+	}
+	If you are solely or primarily debugging your project on web/mobile/consoles,
+	you can set up a separate "server" project: ##{
+	-	Create a new GameMaker project
+	-	Import the YYMPS file (from Releases) to your project.\
+		Import both the scripts and included files.
+	-	Add `obj_snowstatevis` to your room
+	-	Set `want_client` to `false` in `obj_snowstatevis`' Create event.
+	}
+}
+#[Using](using) {
+	##{
+	-	Use [ssv_client.add(...)](SnowStateVisClient.add)
+		to register the state machines that you want to be observable in the watcher
+	-	Run your game
+	-	If you're testing on web/mobile/consoles,
+		run the server project that you've created during [setup].
+	-	Open [http://127.0.0.1:2080](http://127.0.0.1:2080) in a web browser to access the [watcher].
+	}
+}
+#[Watcher UI](watcher) {
+	It's a fairly simple web application, all things considered: --{
+	-	On the left, you have a list of state machines that are currently active in the connected games.\
+		You can watch/unwatch individual FSMs by ticking/un-ticking checkboxes next to their names.
+	-	Each watched state gets its own little panel containing the name and a state graph.\
+		The panels can be resized and will scroll if necessary.
+	-	The active state is highlighted in red.
+	-	A recent transition is indicated with a fading red arrow.
+	-	If multiple states and arrows are highlighted/flicker,
+		your state machine is likely stuck and is changing states rapidly.
+	-	Clicking on a state-block forces a transition to that state.\
+		Note that this triggers a `fsm.change()` directly
+		and can be used to transition between states that otherwise have no direct route between them.
+	}
+}
+API:
+#[obj_snowstatevis]() {
+	This is a helper object that sets up the system's server and client as necessary.
+	
+	It defines the following global variables:
+	#[ssv_server]() {
+		A [SnowStateVisServer].
+		
+		This will be `undefined` if we're running on web or it has been disabled.
+	}
+	#[ssv_client]() {
+		A [SnowStateVisClient].
+		
+		If disabled
+		(read: [connect](SnowStateVisClient.connect) has not been called),
+		this is _not_ `undefined` but quietly backs out of any attempts to interact with it.
+	}
+}
+#[SnowStateVisServer]() {
+	You shouldn't usually have to deal with it
+	since [obj_snowstatevis] will create one for you, but you may.
+	#[new SnowStateVisServer(web_http_port, web_ws_port, game_tcp_port, game_ws_port)]() {
+		Initializes a coordination server.
+		
+		The ports don't really matter so long as they are different and you remember which one is which (you'll need this later).
+	}
+	#[server.start()]() {
+		Starts up the server, usually called on game start / after creating it.
+	}
+	#[server.async_network()]() {
+		Should be called in Async - Network event.
+	}
+}
+#[SnowStateVisClient](+) {
+	Setup (handled by [obj_snowstatevis]):
+	#[new SnowStateVisClient(name)]() {
+		Initializes a game-side client/connection to the coordination server.
+		
+		*name* is shown in the watcher(s).
+	}
+	#[connect(url, ws_port, tcp_port)](.) {
+		Starts connecting to the server. Ports are the same as *game_ws_port* and *game_tcp_port* that have been specified when creating a server.
+	}
+	#[update()](.) {
+		Should be called once per frame.
+	}
+	#[async_network()](.) {
+		Should be called in Async - Network event.
+	}
+	FSMs (handled by you):
+	#[add(fsm, name, ?transitions)](.) {
+		Registers a SnowState machine (*fsm*) to be displayed on the watcher(s).
+		
+		*name* is for display.
+		
+		*transitions* (optional) is a struct containing source➜destination(s) states, for example:
+		```gml
+		var name = object_get_name(object_index) + " " + string(int64(id));
+		ssv_client.add(fsm, name, {
+			idle: ["up", "down"],
+			up: "idle",
+			down: "idle",
+		});
+		```
+		The system will automatically pick up transitions
+		that have been added to SnowState machine using `fsm.add_transition()`.
+	}
+	#[remove(fsm_or_name)](.) {
+		Removes a previously registered SnowState machine by either a reference or a name (as set in [add](SnowStateVisClient.add)).
+		
+		This makes it disappear from the watchers.
+	}
+}

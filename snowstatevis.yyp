@@ -46,6 +46,7 @@
     {"id":{"name":"scrSanitize","path":"scripts/scrSanitize/scrSanitize.yy",},"order":0,},
     {"id":{"name":"Sentry","path":"scripts/Sentry/Sentry.yy",},"order":0,},
     {"id":{"name":"SnowState","path":"scripts/SnowState/SnowState.yy",},"order":0,},
+    {"id":{"name":"obj_snowstatevis","path":"objects/obj_snowstatevis/obj_snowstatevis.yy",},"order":1,},
     {"id":{"name":"SnowStateVisClient","path":"scripts/SnowStateVisClient/SnowStateVisClient.yy",},"order":0,},
     {"id":{"name":"SnowStateVisHelpers","path":"scripts/SnowStateVisHelpers/SnowStateVisHelpers.yy",},"order":0,},
     {"id":{"name":"SnowStateVisPatch","path":"scripts/SnowStateVisPatch/SnowStateVisPatch.yy",},"order":0,},

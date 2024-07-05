@@ -8,5 +8,9 @@
         "specTypeInst": true,
         "specTypeStatic": true,
         "specTypeVar": true
-    }
+    },
+    "rawDirectories": [
+        ".",
+        "docs\/snowstatevis.dmd"
+    ]
 }

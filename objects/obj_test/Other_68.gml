@@ -1,3 +1,4 @@
+exit;
 var _kind = "async";
 switch (async_load[?"type"]) {
 	case network_type_connect: _kind = "connect"; break;
@@ -13,5 +14,3 @@ if (async_load[?"type"] == network_type_data) {
 	buffer_seek(_buf, buffer_seek_start, 0);
 	show_debug_message("content: <<<" + _str + ">>>");
 }
-if (server != undefined) server.async_network();
-if (client != undefined) client.async_network();

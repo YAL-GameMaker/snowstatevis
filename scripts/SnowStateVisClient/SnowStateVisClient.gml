@@ -1,6 +1,8 @@
 function SnowStateVisClient(_name) constructor {
+	__name = _name;
 	__socket = -1 /*#as network_socket*/;
 	__is_raw = false;
+	__active = false;
 	__ready = false;
 	__queue = [];
 	__fsm_raw_array = [] /*#as SnowState[]*/;
@@ -8,6 +10,7 @@ function SnowStateVisClient(_name) constructor {
 	__fsm_lookup = {}; /// @is {CustomKeyStruct<string, SnowStateVisClientFSM>}
 	
 	static connect = function(_url, _ws_port, _tcp_port, _use_ws = undefined) {
+		__active = true;
 		_use_ws ??= os_browser != browser_not_a_browser;
 		__is_raw = _use_ws;
 		var _result;
@@ -19,13 +22,19 @@ function SnowStateVisClient(_name) constructor {
 			//network_set_config(network_config_use_non_blocking_socket, true);
 			_result = network_connect_async(__socket, _url, _tcp_port);
 		}
-		trace("Connect", {result: _result});
+		//trace("Connect", {result: _result});
+		__send({
+			type: "game.rename",
+			name: __name,
+		});
 		return _result;
 	}
 	
 	/// @param {SnowState} fsm
 	/// @param {string} label
+	/// @param {any} ?transitions
 	static add = function(_fsm, _name, _trans = {}) {
+		if (!__active) return false;
 		if (variable_struct_exists(__fsm_lookup, _name)) return false;
 		if (array_contains(__fsm_raw_array, _fsm)) return false;
 		array_push(__fsm_raw_array, _fsm);
@@ -40,6 +49,7 @@ function SnowStateVisClient(_name) constructor {
 		var _ft_count = array_length(_ft_keys);
 		for (var _ft_ind = 0; _ft_ind < _ft_count; _ft_ind++) {
 			var _ft_from = _ft_keys[_ft_ind];
+			
 			// labels is { "idle->up": [{ to: "up", ... }] }
 			var _ft_labels = _ft[$ _ft_from];
 			var _ft_labels_keys = struct_get_names(_ft_labels);
@@ -81,13 +91,14 @@ function SnowStateVisClient(_name) constructor {
 				name: __name,
 				current: _to,
 			})
-			trace("change: " + _from + " -> " + _to);
+			//trace("change: " + _from + " -> " + _to);
 		}))
 		return true;
 	}
 	
 	/// @param {SnowState|string} fsm_or_name
 	static remove = function(_fsm_or_name) {
+		if (!__active) return false;
 		var _wrap/*:SnowStateVisClientFSM*/, _name, _ind;
 		if (is_string(_fsm_or_name)) {
 			_name = _fsm_or_name;
@@ -111,37 +122,28 @@ function SnowStateVisClient(_name) constructor {
 	}
 	
 	static update = function() {
-		exit;
-		var _ft_count = array_length(__fsm_array);
-		for (var i = 0; i < _ft_count; i++) {
-			var _wrap = __fsm_array[i];
-			var _current = _wrap.__raw.get_current_state();
-			if (_current != _wrap.__current) {
-				_wrap.__current = _current;
-				__send({
-					type: "fsm.update",
-					name: _wrap.__name,
-					current: _current,
-				})
-			}
-		}
+		if (!__active) return false;
+		// nothing here right now!
 	}
 	
 	static __send = function(_msg) {
-		show_debug_message("send from game: " + json_stringify(_msg));
+		if (!__active) return false;
+		//show_debug_message("send from game: " + json_stringify(_msg));
 		if (__ready) {
 			__SnowStateVis_send(__socket, _msg, __is_raw);
 		} else {
 			array_push(__queue, _msg);
 		}
 	}
+	
 	static async_network = function() {
+		if (!__active) return false;
 		var _map/*:async_load_network*/ = /*#cast*/ async_load;
 		switch (_map[?"type"]) {
 			case network_type_non_blocking_connect:
 				if (_map[?"id"] != __socket) break;
 				__ready = _map[?"succeeded"];
-				show_debug_message("ready: " + string(__ready) + " skt: " + string(__socket));
+				//show_debug_message("ready: " + string(__ready) + " skt: " + string(__socket));
 				if (__ready) {
 					var _ft_count = array_length(__queue);
 					for (var i = 0; i < _ft_count; i++) {
@@ -161,6 +163,7 @@ function SnowStateVisClient(_name) constructor {
 				break;
 		}
 	}
+	
 	static __handle_message = function(_msg) {
 		switch (_msg.type) {
 			case "fsm.change":
@@ -170,10 +173,6 @@ function SnowStateVisClient(_name) constructor {
 				break;
 		}
 	}
-	__send({
-		type: "game.rename",
-		name: _name,
-	});
 }
 function SnowStateVisClientFSM(_client, _fsm, _name) constructor {
 	__client = _client; /// @is {SnowStateVisClient}

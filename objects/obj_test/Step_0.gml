@@ -1,1 +1,0 @@
-if (client != undefined) client.update();

@@ -8,7 +8,12 @@ body {
 	inset: 0.5em;
 }
 #list {
+	flex-shrink: 0;
 	min-width: 10em;
+	position: sticky;
+	left: 0.5em;
+	resize: horizontal;
+	overflow-y: auto;
 }
 #list, .view {
 	padding: 0.3em;
@@ -18,10 +23,16 @@ body {
 #list label {
 	display: block;
 }
+.view-scroller {
+	display: flex;
+	flex-grow: 1;
+	overflow: auto;
+}
 .view {
 	margin-left: 0.5em;
 	overflow: auto;
 	resize: horizontal;
+	flex-shrink: 0;
 }
 .view .graph {
 	position: relative;

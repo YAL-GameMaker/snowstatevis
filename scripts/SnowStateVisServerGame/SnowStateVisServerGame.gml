@@ -5,7 +5,7 @@ function SnowStateVisServerGame(_server, _socket, _is_raw) : SnowStateVisServerI
 	__fsm_array = []; /// @is {SnowStateVisServerFSM[]}
 	__name = "";
 	static __handle_message = function(_msg) {
-		show_debug_message("recv from game: " + json_stringify(_msg));
+		//show_debug_message("recv from game: " + json_stringify(_msg));
 		switch (_msg.type) {
 			case "game.rename":
 				if (__name != "") variable_struct_remove(__server.__game_from_name, __name);
