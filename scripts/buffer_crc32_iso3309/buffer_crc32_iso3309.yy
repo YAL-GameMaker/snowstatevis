@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "buffer_crc32_iso3309",
-  "isDnD": false,
-  "isCompatibility": false,
-  "parent": {
-    "name": "HttpServer",
-    "path": "folders/HTGM/HttpServer.yy",
+  "$GMScript":"",
+  "%Name":"buffer_crc32_iso3309",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"buffer_crc32_iso3309",
+  "parent":{
+    "name":"HttpServer",
+    "path":"folders/HTGM/HttpServer.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }

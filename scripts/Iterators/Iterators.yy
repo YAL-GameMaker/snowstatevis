@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "Iterators",
-  "isDnD": false,
-  "isCompatibility": false,
-  "parent": {
-    "name": "Iterators",
-    "path": "folders/HTGM/Iterators.yy",
+  "$GMScript":"",
+  "%Name":"Iterators",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"Iterators",
+  "parent":{
+    "name":"Iterators",
+    "path":"folders/HTGM/Iterators.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }

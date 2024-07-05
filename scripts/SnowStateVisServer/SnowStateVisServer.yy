@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "SnowStateVisServer",
-  "isDnD": false,
-  "isCompatibility": false,
-  "parent": {
-    "name": "server",
-    "path": "folders/SnowStateVis/server.yy",
+  "$GMScript":"",
+  "%Name":"SnowStateVisServer",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"SnowStateVisServer",
+  "parent":{
+    "name":"server",
+    "path":"folders/SnowStateVis/server.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }

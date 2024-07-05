@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "buffer_png_from_surface",
-  "isDnD": false,
-  "isCompatibility": false,
-  "parent": {
-    "name": "HttpServer",
-    "path": "folders/HTGM/HttpServer.yy",
+  "$GMScript":"",
+  "%Name":"buffer_png_from_surface",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"buffer_png_from_surface",
+  "parent":{
+    "name":"HttpServer",
+    "path":"folders/HTGM/HttpServer.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }

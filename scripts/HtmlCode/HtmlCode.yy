@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "HtmlCode",
-  "isDnD": false,
-  "isCompatibility": false,
-  "parent": {
-    "name": "Html",
-    "path": "folders/HTGM/Html.yy",
+  "$GMScript":"",
+  "%Name":"HtmlCode",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"HtmlCode",
+  "parent":{
+    "name":"Html",
+    "path":"folders/HTGM/Html.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }

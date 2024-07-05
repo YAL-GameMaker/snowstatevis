@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "dedent",
-  "isDnD": false,
-  "isCompatibility": false,
-  "parent": {
-    "name": "Html",
-    "path": "folders/HTGM/Html.yy",
+  "$GMScript":"",
+  "%Name":"dedent",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"dedent",
+  "parent":{
+    "name":"Html",
+    "path":"folders/HTGM/Html.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }

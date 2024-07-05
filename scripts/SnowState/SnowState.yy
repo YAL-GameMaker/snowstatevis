@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "SnowState",
-  "isDnD": false,
-  "isCompatibility": false,
-  "parent": {
-    "name": "SnowState",
-    "path": "folders/HTGM/SnowState.yy",
+  "$GMScript":"",
+  "%Name":"SnowState",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"SnowState",
+  "parent":{
+    "name":"SnowState",
+    "path":"folders/HTGM/SnowState.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }

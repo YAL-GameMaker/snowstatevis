@@ -1,0 +1,10 @@
+{
+  "FolderOrderSettings":[
+    {"name":"server","order":3,"path":"folders/SnowStateVis/server.yy",},
+  ],
+  "ResourceOrderSettings":[
+    {"name":"obj_snowstatevis","order":4,"path":"objects/obj_snowstatevis/obj_snowstatevis.yy",},
+    {"name":"SnowStateVisClient","order":2,"path":"scripts/SnowStateVisClient/SnowStateVisClient.yy",},
+    {"name":"SnowStateVisHelpers","order":1,"path":"scripts/SnowStateVisHelpers/SnowStateVisHelpers.yy",},
+  ],
+}

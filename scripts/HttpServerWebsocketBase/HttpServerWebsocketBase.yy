@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "HttpServerWebsocketBase",
-  "isDnD": false,
-  "isCompatibility": false,
-  "parent": {
-    "name": "HttpServer",
-    "path": "folders/HTGM/HttpServer.yy",
+  "$GMScript":"",
+  "%Name":"HttpServerWebsocketBase",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"HttpServerWebsocketBase",
+  "parent":{
+    "name":"HttpServer",
+    "path":"folders/HTGM/HttpServer.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }

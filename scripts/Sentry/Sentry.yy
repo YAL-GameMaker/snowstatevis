@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "Sentry",
-  "isDnD": false,
-  "isCompatibility": false,
-  "parent": {
-    "name": "LoggingSuite",
-    "path": "folders/HTGM/LoggingSuite.yy",
+  "$GMScript":"",
+  "%Name":"Sentry",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"Sentry",
+  "parent":{
+    "name":"LoggingSuite",
+    "path":"folders/HTGM/LoggingSuite.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }
